@@ -1,10 +1,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include "data_structures.h"
-#include <iostream>
-#include <vector>
 #include <string>
+
+class Graph;
 
 class Util {
 public:

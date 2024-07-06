@@ -2,6 +2,7 @@
 #include "graph.h"
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 void Util::readGraph(const std::string& filename, Graph& graph, const std::string& graphType, int flag) {
     std::ifstream inputFile(filename);
