@@ -1,30 +1,32 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <string>
 #include "data_structures.h"
-#include "heap.h"
-#include "stack.h"
-#include <vector>
+#include <vector> 
+#include <string>
 
 class Graph {
 public:
-    Graph(int n);
+    Graph(int size, const std::string& type) ;
     ~Graph();
-    void addEdge(int u, int v, double w);
+
+    void addEdge(int u, int v, double w, int flag);
+    void addEdgeToFront(int u, int v, double w);
+    void addEdgeToRear(int u, int v, double w);
+    void printGraph() const;
     void printAdj() const;
-    void singlePairShortestPath(int source, int destination);
     void singleSourceShortestPath(int source);
     void printLength(int s, int t) const;
     void printPath(int s, int t) const;
 
+    void initializeVertices(int size);
+
 private:
-    int n;
-    std::vector<pVERTEX> vertices;
-    std::vector<pNODE> adj;
-    MinHeap* minHeap;
-    Stack* stack;
-    void initializeSingleSource(int source);
-    void relax(int u, int v, double w);
+    VERTEX* vertices;
+    pNODE* adj;
+    int size;
+    std::string graphType;
 };
 
 #endif // GRAPH_H

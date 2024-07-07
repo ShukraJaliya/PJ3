@@ -17,7 +17,7 @@ typedef struct TAG_NODE {
     int index;
     int u;
     int v;
-    double w;
+    double weight;
     TAG_NODE* next;
 } NODE;
 

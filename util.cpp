@@ -13,6 +13,7 @@ void Util::readGraph(const std::string& filename, Graph& graph, const std::strin
 
     int n, m;
     inputFile >> n >> m;
+    graph.initializeVertices(n);
 
     for (int i = 0; i < m; ++i) {
         int edgeIndex, u, v;
@@ -20,10 +21,10 @@ void Util::readGraph(const std::string& filename, Graph& graph, const std::strin
         inputFile >> edgeIndex >> u >> v >> w;
 
         if (graphType == "DirectedGraph") {
-            graph.addEdge(u, v, w);
+            graph.addEdge(u, v, w, flag);
         } else if (graphType == "UndirectedGraph") {
-            graph.addEdge(u, v, w);
-            graph.addEdge(v, u, w);
+            graph.addEdge(u, v, w, flag);
+            graph.addEdge(u, v, w, flag);
         }
     }
 

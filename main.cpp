@@ -1,41 +1,43 @@
-#include "main.h"
+#include <iostream>
+#include <string>
+#include "graph.h"
+#include "util.h"
 
 int main(int argc, char* argv[]) {
-    if (argc != 4) {
-        std::cerr << "Usage: ./PJ3 <InputFile> <GraphType> <Flag>" << std::endl;
-        return EXIT_FAILURE;
+    if (argc < 4) {
+        std::cerr << "Usage: " << argv[0] << " <InputFile> <GraphType> <Flag>" << std::endl;
+        return 1;
     }
 
     std::string inputFile = argv[1];
     std::string graphType = argv[2];
     int flag = std::stoi(argv[3]);
 
-    Graph graph(0); // Initial size will be updated while reading the graph
-
+    Graph graph(0, graphType);  // Initial size will be updated while reading the graph
     Util::readGraph(inputFile, graph, graphType, flag);
 
-    std::string instruction;
-    while (std::cin >> instruction) {
-        if (instruction == "Stop") {
-            break;
-        } else if (instruction == "PrintADJ") {
+    std::string operation;
+    while (std::cin >> operation) {
+        if (operation == "PrintADJ") {
             graph.printAdj();
-        } else if (instruction == "SinglePair") {
-            int source, destination;
-            std::cin >> source >> destination;
-            graph.singlePairShortestPath(source, destination);
-        } else if (instruction == "SingleSource") {
+        // } else if (operation == "SinglePairShortestPath") {
+        //     int source, destination;
+        //     std::cin >> source >> destination;
+        //     graph.singlePairShortestPath(source, destination);
+        } else if (operation == "SingleSourceShortestPath") {
             int source;
             std::cin >> source;
             graph.singleSourceShortestPath(source);
-        } else if (instruction == "PrintLength") {
+        } else if (operation == "PrintLength") {
             int s, t;
             std::cin >> s >> t;
             graph.printLength(s, t);
-        } else if (instruction == "PrintPath") {
+        } else if (operation == "PrintPath") {
             int s, t;
             std::cin >> s >> t;
             graph.printPath(s, t);
+        } else if (operation == "Stop") {
+            break;
         } else {
             std::cerr << "Invalid instruction." << std::endl;
         }

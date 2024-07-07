@@ -1,116 +1,195 @@
 #include "graph.h"
-#include <iostream>
-#include <cfloat>
-#include <cstring>
 
-Graph::Graph(int n) : n(n) {
-    vertices.resize(n + 1);
-    adj.resize(n + 1, nullptr);
-    minHeap = new MinHeap(n);
-    stack = new Stack(n);
-    for (int i = 1; i <= n; ++i) {
-        vertices[i] = new VERTEX{i, WHITE, DBL_MAX, -1, -1};
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <limits>
+#include <queue> 
+#include <vector> 
+#include "graph.h"
+#include <iomanip>
+#include <string>
+
+#define DBL_MAX std::numeric_limits<double>::max()
+
+Graph::Graph(int size, const std::string& type) {
+    initializeVertices(size);
+    graphType = type;  // Initialize graph type
+}
+
+void Graph::initializeVertices(int size) {
+    this->size = size;
+    vertices = new VERTEX[size];
+    adj = new pNODE[size];
+    for (int i = 0; i < size; ++i) {
+        vertices[i].index = i+1;
+        vertices[i].color = WHITE;
+        vertices[i].key = DBL_MAX;
+        vertices[i].pi = -1;
+        vertices[i].position = -1;
+        adj[i] = nullptr;
     }
 }
 
-Graph::~Graph() {
-    for (int i = 1; i <= n; ++i) {
-        delete vertices[i];
-        pNODE current = adj[i];
-        while (current) {
-            pNODE temp = current;
-            current = current->next;
-            delete temp;
+void Graph::addEdge(int u, int v, double w, int flag) {
+    int indexU = u - 1;
+    int indexV = v - 1;
+    
+    // Check for duplicate edge from u to v
+    pNODE current = adj[indexU];
+    while (current != nullptr) {
+        if (current->v == v) {
+            // Update weight if edge already exists
+            current->weight = w;
+            break;  // Exit loop if edge is found and updated
+        }
+        current = current->next;
+    }
+
+    // If no duplicate edge was found, create a new node for u to v
+    if (current == nullptr) {
+        pNODE newNode1 = new NODE();
+        newNode1->v = v;
+        newNode1->u = u;
+        newNode1->weight = w;
+        newNode1->next = nullptr;
+
+        // Insert at the front or rear based on flag for adjacency list of u
+        if (flag == 1) {
+            newNode1->next = adj[indexU];
+            adj[indexU] = newNode1;
+        } else if (flag == 2) {
+            if (adj[indexU] == nullptr) {
+                adj[indexU] = newNode1;
+            } else {
+                pNODE temp = adj[indexU];
+                while (temp->next != nullptr) {
+                    temp = temp->next;
+                }
+                temp->next = newNode1;
+            }
         }
     }
-    delete minHeap;
-    delete stack;
-}
 
-void Graph::addEdge(int u, int v, double w) {
-    pNODE newNode = new NODE{v, u, v, w, adj[u]};
-    adj[u] = newNode;
-}
-
-void Graph::printAdj() const {
-    for (int i = 1; i <= n; ++i) {
-        std::cout << "ADJ[" << i << "]:";
-        pNODE current = adj[i];
-        while (current) {
-            std::cout << "-->" << "[" << current->u << " " << current->v << ": " << current->w << "]";
+    // If it's an undirected graph, create or update edge from v to u
+    if (graphType == "UndirectedGraph") {
+        current = adj[indexV];
+        while (current != nullptr) {
+            if (current->v == u) {
+                // Update weight if edge already exists
+                current->weight = w;
+                return;  // Exit function after updating undirected edge
+            }
             current = current->next;
+        }
+
+        // If no duplicate edge was found, create a new node for v to u
+        pNODE newNode2 = new NODE();
+        newNode2->v = u;
+        newNode2->u = v;
+        newNode2->weight = w;
+        newNode2->next = nullptr;
+
+        // Insert at the front or rear based on flag for adjacency list of v
+        if (flag == 1) {
+            newNode2->next = adj[indexV];
+            adj[indexV] = newNode2;
+        } else if (flag == 2) {
+            if (adj[indexV] == nullptr) {
+                adj[indexV] = newNode2;
+            } else {
+                pNODE temp = adj[indexV];
+                while (temp->next != nullptr) {
+                    temp = temp->next;
+                }
+                temp->next = newNode2;
+            }
+        }
+    }
+}
+
+
+void Graph::printGraph() const {
+    for (int i = 0; i < size; ++i) {  // Adjusting loop to start from 0 to size - 1
+        std::cout << "ADJ[" << i + 1 << "]:";  // Adjusting output to be 1-based index
+        pNODE temp = adj[i];
+        while (temp) {
+            std::cout << "-->[" << i + 1  << " " << temp->v << ": ";
+            // Print weight with fixed precision (two decimal places)
+            std::cout << std::fixed << std::setprecision(2) << temp->weight << "]";
+            temp = temp->next;
         }
         std::cout << std::endl;
     }
 }
 
-void Graph::initializeSingleSource(int source) {
-    for (int i = 1; i <= n; ++i) {
-        vertices[i]->key = DBL_MAX;
-        vertices[i]->pi = -1;
-    }
-    vertices[source]->key = 0;
-    minHeap->insert(vertices[source]);
-}
-
-void Graph::relax(int u, int v, double w) {
-    if (vertices[v]->key > vertices[u]->key + w) {
-        vertices[v]->key = vertices[u]->key + w;
-        vertices[v]->pi = u;
-        minHeap->decreaseKey(v, vertices[v]->key);
-    }
-}
-
-void Graph::singlePairShortestPath(int source, int destination) {
-    initializeSingleSource(source);
-    while (!minHeap->isEmpty()) {
-        pVERTEX u = minHeap->extractMin();
-        pNODE current = adj[u->index];
-        while (current) {
-            relax(u->index, current->v, current->w);
-            current = current->next;
-        }
-    }
+void Graph::printAdj() const {
+    printGraph();
 }
 
 void Graph::singleSourceShortestPath(int source) {
-    initializeSingleSource(source);
-    while (!minHeap->isEmpty()) {
-        pVERTEX u = minHeap->extractMin();
-        pNODE current = adj[u->index];
-        while (current) {
-            relax(u->index, current->v, current->w);
-            current = current->next;
+    std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, std::greater<std::pair<double, int>>> pq;
+    pq.push(std::make_pair(0.0, source - 1));
+    vertices[source - 1].key = 0.0;
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
+
+        pNODE temp = adj[u];
+        while (temp != nullptr) {
+            int v = temp->v - 1;
+            double weight = temp->weight;
+
+            if (vertices[v].key > vertices[u].key + weight) {
+                vertices[v].key = vertices[u].key + weight;
+                vertices[v].pi = u;
+                pq.push(std::make_pair(vertices[v].key, v));
+            }
+
+            temp = temp->next;
         }
     }
 }
 
+
 void Graph::printLength(int s, int t) const {
-    if (vertices[t]->pi != -1) {
-        std::cout << "The length of the shortest path from " << s << " to " << t << " is: " << vertices[t]->key << std::endl;
+    if (vertices[t - 1].key == DBL_MAX) {
+        std::cout << "No path exists between " << s << " and " << t << std::endl;
     } else {
-        std::cout << "There is no path from " << s << " to " << t << "." << std::endl;
+        std::cout << "The length of the shortest path from " << s << " to " << t << " is: " << std::fixed << std::setprecision(2) << std::setw(7) << vertices[t - 1].key << std::endl;
     }
 }
 
 void Graph::printPath(int s, int t) const {
-    if (vertices[t]->pi != -1) {
-        std::cout << "The shortest path from " << s << " to " << t << " is: ";
-        int current = t;
-        stack->push(vertices[current]);
-        while (vertices[current]->pi != -1) {
-            current = vertices[current]->pi;
-            stack->push(vertices[current]);
+    if (vertices[t - 1].key == DBL_MAX) {
+        std::cout << "There is no path from " << s << " to " << t << "." <<std::endl;
+    } else {
+        std::vector<int> path;
+        for (int v = t - 1; v != -1; v = vertices[v].pi) {
+            path.push_back(v + 1);
         }
-        while (!stack->isEmpty()) {
-            pVERTEX v = stack->pop();
-            std::cout << "[" << v->index << ": " << v->key << "]";
-            if (!stack->isEmpty()) {
+
+        std::cout << "The shortest path from " << s << " to " << t << " is:" << std::endl;
+        for (auto it = path.rbegin(); it != path.rend(); ++it) {
+            std::cout << "[" << *it << ": " << std::fixed << std::setprecision(2) << std::setw(6) << vertices[*it - 1].key << "]";
+            if (it + 1 != path.rend()) {
                 std::cout << "-->";
             }
         }
         std::cout << "." << std::endl;
-    } else {
-        std::cout << "There is no path from " << s << " to " << t << "." << std::endl;
     }
+}
+
+Graph::~Graph() {
+    delete[] vertices;
+    for (int i = 0; i < size; ++i) {
+        pNODE current = adj[i];
+        while (current != nullptr) {
+            pNODE next = current->next;
+            delete current;
+            current = next;
+        }
+    }
+    delete[] adj;
 }
