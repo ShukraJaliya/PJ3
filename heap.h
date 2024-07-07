@@ -6,6 +6,7 @@
 class MinHeap {
 public:
     MinHeap(int capacity);
+    MinHeap();
     ~MinHeap();
     void insert(pVERTEX vertex);
     pVERTEX extractMin();

@@ -1,10 +1,9 @@
 #include "graph.h"
-
+#include "heap.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <limits>
-#include <queue> 
 #include <vector> 
 #include "graph.h"
 #include <iomanip>
@@ -126,25 +125,59 @@ void Graph::printGraph() const {
 void Graph::printAdj() const {
     printGraph();
 }
+void Graph::singlePairShortestPath(int source, int destination) {
+    if (source <= 0 || source > size || destination <= 0 || destination > size) {
+        std::cerr << "Source or destination out of bounds" << std::endl;
+        return;
+    }
+    MinHeap minHeap(size);
+    vertices[source - 1].key = 0;
+    minHeap.insert(&vertices[source - 1]);
 
-void Graph::singleSourceShortestPath(int source) {
-    std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, std::greater<std::pair<double, int>>> pq;
-    pq.push(std::make_pair(0.0, source - 1));
-    vertices[source - 1].key = 0.0;
+    while (!minHeap.isEmpty()) {
+        pVERTEX u = minHeap.extractMin();
+        int u_index = u->index - 1;
 
-    while (!pq.empty()) {
-        int u = pq.top().second;
-        pq.pop();
-
-        pNODE temp = adj[u];
+        pNODE temp = adj[u_index];
         while (temp != nullptr) {
-            int v = temp->v - 1;
+            int v_index = temp->v - 1;
             double weight = temp->weight;
 
-            if (vertices[v].key > vertices[u].key + weight) {
-                vertices[v].key = vertices[u].key + weight;
-                vertices[v].pi = u;
-                pq.push(std::make_pair(vertices[v].key, v));
+            if (vertices[v_index].key > vertices[u_index].key + weight) {
+                vertices[v_index].key = vertices[u_index].key + weight;
+                vertices[v_index].pi = u_index;
+                minHeap.decreaseKey(vertices[v_index].index, vertices[v_index].key);
+            }
+
+            temp = temp->next;
+        }
+    }
+
+    if (vertices[destination - 1].key == DBL_MAX) {
+        vertices[destination - 1].pi = -1;
+    }
+}
+
+void Graph::singleSourceShortestPath(int source) {
+    // Initialize MinHeap and source vertex
+    MinHeap minHeap(size);
+    vertices[source - 1].key = 0.0;
+    minHeap.insert(&vertices[source - 1]);
+
+    while (!minHeap.isEmpty()) {
+        VERTEX* u = minHeap.extractMin();
+        int u_index = u->index - 1;
+
+        pNODE temp = adj[u_index];
+        while (temp != nullptr) {
+            int v_index = temp->v - 1;
+            double weight = temp->weight;
+
+            // Relaxation step
+            if (vertices[v_index].key > vertices[u_index].key + weight) {
+                vertices[v_index].key = vertices[u_index].key + weight;
+                vertices[v_index].pi = u_index;
+                minHeap.decreaseKey(vertices[v_index].index, vertices[v_index].key);
             }
 
             temp = temp->next;

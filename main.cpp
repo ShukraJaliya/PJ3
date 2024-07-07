@@ -20,10 +20,10 @@ int main(int argc, char* argv[]) {
     while (std::cin >> operation) {
         if (operation == "PrintADJ") {
             graph.printAdj();
-        // } else if (operation == "SinglePairShortestPath") {
-        //     int source, destination;
-        //     std::cin >> source >> destination;
-        //     graph.singlePairShortestPath(source, destination);
+        } else if (operation == "SinglePairShortestPath") {
+            int source, destination;
+            std::cin >> source >> destination;
+            graph.singlePairShortestPath(source, destination);
         } else if (operation == "SingleSourceShortestPath") {
             int source;
             std::cin >> source;
@@ -45,3 +45,4 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+

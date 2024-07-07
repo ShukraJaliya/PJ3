@@ -6,6 +6,9 @@ MinHeap::MinHeap(int capacity) : capacity(capacity), size(0) {
     heapArray = new pVERTEX[capacity + 1];
     positionMap = new int[capacity + 1];
 }
+MinHeap::MinHeap() : capacity(0), size(0), heapArray(nullptr), positionMap(nullptr) {
+    
+}
 
 MinHeap::~MinHeap() {
     delete[] heapArray;
