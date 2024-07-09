@@ -22,6 +22,12 @@ pVERTEX Stack::pop() {
     }
     return stackArray[--size];
 }
+pVERTEX Stack::top() const {
+    if (isEmpty()) {
+        throw std::underflow_error("Stack is empty");
+    }
+    return stackArray[size - 1];  // Return top element
+}
 
 bool Stack::isEmpty() const {
     return size == 0;

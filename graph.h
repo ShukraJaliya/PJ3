@@ -9,7 +9,7 @@
 
 class Graph {
 public:
-    Graph(int size, const std::string& type) ;
+     Graph(int size, const std::string& type, int flag); ;
     ~Graph();
 
     void addEdge(int u, int v, double w, int flag);
@@ -29,6 +29,15 @@ private:
     std::string graphType;
     MinHeap minHeap;
     void initializeMinHeap();
+    int flag;
+    void dijkstra(int source, double* dist, int* prev)const;
+    int lastSource;
+    int lastDestination;
+    bool pathComputed;
+
+    double* dist;  // Declare dist as a private member
+    int* prev;  
+    
 };
 
 #endif // GRAPH_H

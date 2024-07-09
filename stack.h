@@ -9,6 +9,7 @@ public:
     ~Stack();
     void push(pVERTEX vertex);
     pVERTEX pop();
+    pVERTEX top() const;
     bool isEmpty() const;
 
 private:

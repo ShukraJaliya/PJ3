@@ -23,8 +23,8 @@ void Util::readGraph(const std::string& filename, Graph& graph, const std::strin
         if (graphType == "DirectedGraph") {
             graph.addEdge(u, v, w, flag);
         } else if (graphType == "UndirectedGraph") {
-            graph.addEdge(u, v, w, flag);
-            graph.addEdge(u, v, w, flag);
+            graph.addEdge(v, u, w, flag);
+           // graph.addEdge(u, v, w, flag);
         }
     }
 

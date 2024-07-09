@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 #include "graph.h"
@@ -12,22 +13,19 @@ int main(int argc, char* argv[]) {
     std::string inputFile = argv[1];
     std::string graphType = argv[2];
     int flag = std::stoi(argv[3]);
+    
 
-    Graph graph(0, graphType);  // Initial size will be updated while reading the graph
+    Graph graph(0, graphType, flag);  // Initial size will be updated while reading the graph
     Util::readGraph(inputFile, graph, graphType, flag);
 
     std::string operation;
     while (std::cin >> operation) {
         if (operation == "PrintADJ") {
             graph.printAdj();
-        } else if (operation == "SinglePairShortestPath") {
+        } else if (operation == "SinglePair") {
             int source, destination;
             std::cin >> source >> destination;
             graph.singlePairShortestPath(source, destination);
-        } else if (operation == "SingleSourceShortestPath") {
-            int source;
-            std::cin >> source;
-            graph.singleSourceShortestPath(source);
         } else if (operation == "PrintLength") {
             int s, t;
             std::cin >> s >> t;
@@ -36,6 +34,10 @@ int main(int argc, char* argv[]) {
             int s, t;
             std::cin >> s >> t;
             graph.printPath(s, t);
+        } else if (operation == "SingleSource") {
+            int source;
+            std::cin >> source;
+            graph.singleSourceShortestPath(source);
         } else if (operation == "Stop") {
             break;
         } else {
@@ -45,4 +47,3 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-

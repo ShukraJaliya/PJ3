@@ -1,5 +1,6 @@
 #ifndef DATA_STRUCTURES_H
 #define DATA_STRUCTURES_H
+#include <vector> 
 
 typedef enum { WHITE, GRAY, BLACK } COLOR;
 
@@ -9,6 +10,7 @@ typedef struct TAG_VERTEX {
     double key;
     int pi;
     int position;
+    std::vector<std::pair<int, double>> adj;
 } VERTEX;
 
 typedef VERTEX* pVERTEX;
